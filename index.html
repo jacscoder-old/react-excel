@@ -48,8 +48,10 @@
         return React.DOM.table(null,
           React.DOM.thead(null,
             React.DOM.tr(null,
-              this.props.headers.map(function (title) {
-                return React.DOM.th(null, title);
+              this.props.headers.map(function (title, idx) {
+                // key is only needed to be unique inside of this array,
+                // rather than the whole React application.
+                return React.DOM.th({key: idx}, title);
               })
             )
           )
