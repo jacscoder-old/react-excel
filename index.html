@@ -44,6 +44,7 @@
       // However, it shouldn't bother us when involving JSX later.
       displayName: 'ExcelComponent',
 
+      // This is like validator for props.
       propTypes: {
         headers: React.PropTypes.arrayOf(
           React.PropTypes.string
@@ -59,22 +60,39 @@
       getInitialState: function () {
         return {
           data: this.props.initialData
-        }
+        };
+      },
+
+      _sort: function (e) {
+        // console.log(e.target.cellIndex);
+        var column = e.target.cellIndex;
+        data = this.state.data.slice();
+        data.sort(function (a, b) {
+          return a[column] > b[column] ? 1 : -1;
+        });
+
+        // Should not use this.state to alter data directly.
+        // Instead, setState is the only better way to do modification.
+        this.setState({
+          data: data
+        });
       },
 
       render: function () {
         return React.DOM.table(null,
-          React.DOM.thead(null,
+          React.DOM.thead({onClick: this._sort},
             React.DOM.tr(null,
               this.props.headers.map(function (title, idx) {
-                // key is only needed to be unique inside of this array or
+                // Key is only needed to be unique inside of this array or
                 // current loop, rather than the whole React application.
                 return React.DOM.th({key: idx}, title);
               })
             )
           ),
           React.DOM.tbody(null,
-            this.props.initialData.map(function (row, idx) {
+            // Using state rather than props here,
+            // since the data should be dynamic.
+            this.state.data.map(function (row, idx) {
               return React.DOM.tr({key: idx},
                 row.map(function (cell, idx) {
                   return React.DOM.td({key: idx}, cell);
