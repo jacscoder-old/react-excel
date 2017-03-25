@@ -40,16 +40,20 @@
 
     var ExcelComponent = React.createClass({
 
+      // This is for React to figure out a name for this component.
+      // However, it shouldn't bother us when involving JSX later.
+      displayName: 'ExcelComponent',
+
       render: function () {
         return React.DOM.table(null,
-            React.DOM.thead(null,
-              React.DOM.tr(null,
-                this.props.headers.map(function (title) {
-                  return React.DOM.th(null, title);
-                })
-              )
+          React.DOM.thead(null,
+            React.DOM.tr(null,
+              this.props.headers.map(function (title) {
+                return React.DOM.th(null, title);
+              })
             )
-          );
+          )
+        );
       }
 
     });
