@@ -44,6 +44,17 @@
       // However, it shouldn't bother us when involving JSX later.
       displayName: 'ExcelComponent',
 
+      propTypes: {
+        headers: React.PropTypes.arrayOf(
+          React.PropTypes.string
+        ),
+        initialData: React.PropTypes.arrayOf(
+          React.PropTypes.arrayOf(
+            React.PropTypes.string
+          )
+        )
+      },
+
       // This is for the data that will be updated or changed in the future.
       getInitialState: function () {
         return {
@@ -56,8 +67,8 @@
           React.DOM.thead(null,
             React.DOM.tr(null,
               this.props.headers.map(function (title, idx) {
-                // key is only needed to be unique inside of this array,
-                // rather than the whole React application.
+                // key is only needed to be unique inside of this array or
+                // current loop, rather than the whole React application.
                 return React.DOM.th({key: idx}, title);
               })
             )
