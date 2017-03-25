@@ -61,7 +61,8 @@
         return {
           data: this.props.initialData,
           sortby: null, // the index of current column to be sorted
-          decending: false // a bool to determine decending or asending
+          decending: false, // a bool to determine decending or asending
+          edit: null, // {row: index, cell: index}
         };
       },
 
@@ -81,8 +82,21 @@
         this.setState({
           data: data,
           sortby: column,
-          decending: decending
+          decending: decending,
         });
+      },
+
+      _showEditor: function (e) {
+        this.setState({
+          edit: {
+            row: parseInt(e.target.dataset.row, 10),
+            cell: e.target.cellIndex, // built-in
+          }
+        });
+      },
+
+      _save: function (e) {
+
       },
 
       render: function () {
@@ -99,16 +113,32 @@
               }, this) // This is the key to use this.state in render function.
             )
           ),
-          React.DOM.tbody(null,
+          React.DOM.tbody({onDoubleClick: this._showEditor},
             // Using state rather than props here,
             // since the data should be dynamic.
-            this.state.data.map(function (row, idx) {
-              return React.DOM.tr({key: idx},
+            this.state.data.map(function (row, rowidx) {
+              return React.DOM.tr({key: rowidx},
                 row.map(function (cell, idx) {
-                  return React.DOM.td({key: idx}, cell);
-                })
+                  var content = cell;
+
+                  // add input form
+                  var edit = this.state.edit;
+                  if (edit && edit.row === rowidx && edit.cell === idx) {
+                    content = React.DOM.form({onSubmit: this._save},
+                      React.DOM.input({
+                        type: 'text',
+                        defaultValue: content,
+                      })
+                    );
+                  }
+
+                  return React.DOM.td({
+                    key: idx,
+                    'data-row': rowidx, // equals e.target.dataset.row
+                  }, content);
+                }, this)
               );
-            })
+            }, this) // It must be used if this.state is needed.
           )
         );
       }
