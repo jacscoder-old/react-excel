@@ -59,7 +59,9 @@
       // This is for the data that will be updated or changed in the future.
       getInitialState: function () {
         return {
-          data: this.props.initialData
+          data: this.props.initialData,
+          sortby: null, // the index of current column to be sorted
+          decending: false // a bool to determine decending or asending
         };
       },
 
@@ -67,14 +69,19 @@
         // console.log(e.target.cellIndex);
         var column = e.target.cellIndex;
         data = this.state.data.slice();
+        decending = this.state.sortby === column && !this.state.decending;
         data.sort(function (a, b) {
-          return a[column] > b[column] ? 1 : -1;
+          return decending
+            ? (a[column] < b[column] ? 1 : -1)
+            : (a[column] > b[column] ? 1 : -1);
         });
 
         // Should not use this.state to alter data directly.
         // Instead, setState is the only better way to do modification.
         this.setState({
-          data: data
+          data: data,
+          sortby: column,
+          decending: decending
         });
       },
 
@@ -85,8 +92,11 @@
               this.props.headers.map(function (title, idx) {
                 // Key is only needed to be unique inside of this array or
                 // current loop, rather than the whole React application.
+                if (this.state.sortby === idx) {
+                  title += this.state.decending ? ' \u2191' : ' \u2193';
+                }
                 return React.DOM.th({key: idx}, title);
-              })
+              }, this) // This is the key to use this.state in render function.
             )
           ),
           React.DOM.tbody(null,
@@ -111,7 +121,7 @@
         // If they will alter after creating this compent, you should add them
         // into state in getInitialState section.
         headers: headers,
-        initialData: data
+        initialData: data,
       }),
       document.getElementById('app')
     );
