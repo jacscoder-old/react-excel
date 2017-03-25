@@ -96,7 +96,15 @@
       },
 
       _save: function (e) {
+        e.preventDefault(); // prevent reload page
+        var data = this.state.data.slice(); // copy data
+        var input = e.target.firstChild;
+        data[this.state.edit.row][this.state.edit.cell] = input.value;
 
+        this.setState({
+          data: data,
+          edit: null,
+        });
       },
 
       render: function () {
