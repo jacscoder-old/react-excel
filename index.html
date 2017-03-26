@@ -56,6 +56,9 @@
         )
       },
 
+      // temp orgin data for search
+      preSearchData: null,
+
       // This is for the data that will be updated or changed in the future.
       getInitialState: function () {
         return {
@@ -63,6 +66,7 @@
           sortby: null, // the index of current column to be sorted
           decending: false, // a bool to determine decending or asending
           edit: null, // {row: index, cell: index}
+          search: false,
         };
       },
 
@@ -107,7 +111,32 @@
         });
       },
 
-      render: function () {
+      _toggleSearch: function (e) {
+        var search = !this.state.search;
+        if (search) {
+          console.log('on search');
+          this._preSearchData = this.state.data;
+          this.setState({
+            search: search,
+          });
+        } else {
+          console.log('off search');
+          this.setState({
+            data: this._preSearchData,
+            search: search,
+          });
+          this.preSearchData = null;
+        }
+      },
+
+      _renderToolbar: function () {
+        return React.DOM.button({
+          onClick: this._toggleSearch,
+          className: 'toolbar'
+        }, 'search');
+      },
+
+      _renderTable: function () {
         return React.DOM.table(null,
           React.DOM.thead({onClick: this._sort},
             React.DOM.tr(null,
@@ -119,7 +148,8 @@
                 }
                 return React.DOM.th({key: idx}, title);
               }, this) // This is the key to use this.state in render function.
-            )
+            ),
+            this._renderSearch()
           ),
           React.DOM.tbody({onDoubleClick: this._showEditor},
             // Using state rather than props here,
@@ -148,6 +178,30 @@
               );
             }, this) // It must be used if this.state is needed.
           )
+        );
+      },
+
+      _renderSearch: function () {
+        if (!this.state.search) {
+          return null;
+        }
+
+        return React.DOM.tr(null,
+          this.props.headers.map(function (_ignore, idx) {
+            return React.DOM.td({key: idx},
+              React.DOM.input({
+                type: 'text',
+                'data-idx': idx,
+              })
+            );
+          })
+        );
+      },
+
+      render: function () {
+        return React.DOM.div(null,
+          this._renderToolbar(),
+          this._renderTable()
         );
       }
 
