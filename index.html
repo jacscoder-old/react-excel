@@ -129,6 +129,20 @@
         }
       },
 
+      _search: function (e) {
+        var needle = e.target.value.toLowerCase();
+        if (!needle) {
+          this.setState({ data: this._preSearchData });
+          return;
+        }
+
+        var column = e.target.dataset.idx;
+        var searchData = this._preSearchData.filter(function (row) {
+          return row[column].toString().toLowerCase().indexOf(needle) > -1;
+        });
+        this.setState({ data: searchData });
+      },
+
       _renderToolbar: function () {
         return React.DOM.button({
           onClick: this._toggleSearch,
@@ -186,7 +200,7 @@
           return null;
         }
 
-        return React.DOM.tr(null,
+        return React.DOM.tr({onChange: this._search},
           this.props.headers.map(function (_ignore, idx) {
             return React.DOM.td({key: idx},
               React.DOM.input({
